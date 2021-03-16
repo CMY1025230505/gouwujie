@@ -54,11 +54,13 @@ export default {
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
 
+    
+  },
+  mounted() {
     this.$bus.$on('itemImageLoad',() => {
       this.$refs.scroll.scroll.refresh()
     })
   },
-  mounted() {},
   data() {
     return {
       banners: [],
