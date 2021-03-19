@@ -3,17 +3,24 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control
+        ref="tabControl1"
+        :titles="['流行', '新款', '精选']"
+        @tabClick="tabClick"
+        class="tabCopy"
+        v-show="isTabFixed"
+      />
     <scroll
       class="content"
       ref="scroll"
       @scroll="contentScroll"
       @pullingUp="loadMore"
     >
-      <home-swiper :banners="banners" />
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad" />
       <recommend-view :recommends="recommends" />
       <feature-view />
       <tab-control
-        class="tc"
+        ref="tabControl2"
         :titles="['流行', '新款', '精选']"
         @tabClick="tabClick"
       />
@@ -53,13 +60,13 @@ export default {
     this.getHomeGoods("pop");
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
-
-    
   },
   mounted() {
-    this.$bus.$on('itemImageLoad',() => {
-      this.$refs.scroll.scroll.refresh()
-    })
+    const refresh = this.debounce(this.$refs.scroll.refresh, 500);
+    this.$bus.$on("itemImageLoad", () => {
+      refresh();
+    });
+    console.log(this);
   },
   data() {
     return {
@@ -72,6 +79,8 @@ export default {
       },
       currentType: "pop",
       backTopShow: false,
+      tabOffsetTop: 0,
+      isTabFixed: false
     };
   },
   computed: {
@@ -92,6 +101,8 @@ export default {
           this.currentType = "sell";
           break;
       }
+      this.$refs.tabControl1.currentIndex = index
+      this.$refs.tabControl2.currentIndex = index
     },
     btClick() {
       // this.$refs.scroll.scroll.refresh();
@@ -99,11 +110,29 @@ export default {
     },
     contentScroll(position) {
       this.backTopShow = position.y + 750 < 0;
+
+      this.isTabFixed = (-position.y) > this.tabOffsetTop
     },
     loadMore() {
       console.log("yes");
       this.getHomeGoods(this.currentType);
-      this.$refs.scroll.scroll.refresh();
+      this.$refs.scroll.refresh();
+    },
+    swiperImageLoad() {
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+    },
+    debounce(func, delay) {
+      let timer = null;
+
+      return function (...args) {
+        if (timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+          func.apply(this, args);
+          console.log(2);
+        }, delay);
+      };
     },
 
     // 网络请求
@@ -142,9 +171,6 @@ export default {
   right: 0;
   z-index: 1;
 }
-.tc {
-  z-index: 1;
-}
 .content {
   /* position: absolute;
   top: 44px;
@@ -155,5 +181,10 @@ export default {
   left: 0;
   right: 0;
   overflow: hidden;
+}
+.tabCopy {
+  position: relative;
+  z-index: 3;
+  top: 0;
 }
 </style>

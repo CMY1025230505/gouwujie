@@ -17,21 +17,24 @@ export default {
       pullUpLoad: true,
     });
 
-    this.scroll.on('scroll',(position) => {
-      this.$emit('scroll',position)
-    })
+    this.scroll.on("scroll", (position) => {
+      this.$emit("scroll", position);
+    });
 
-    this.scroll.on('pullingUp',(position) => {
-      this.$emit('pullingUp',position)
-    })
+    this.scroll.on("pullingUp", () => {
+      this.$emit("pullingUp");
+    });
   },
   data() {
     return {
       scroll: null,
     };
   },
-  computed: {
-  }
+  methods: {
+    refresh() {
+      this.scroll && this.scroll.refresh();
+    },
+  },
 };
 </script>
 <style scoped>
