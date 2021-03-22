@@ -4,12 +4,12 @@
       <div slot="center">购物街</div>
     </nav-bar>
     <tab-control
-        ref="tabControl1"
-        :titles="['流行', '新款', '精选']"
-        @tabClick="tabClick"
-        class="tabCopy"
-        v-show="isTabFixed"
-      />
+      ref="tabControl1"
+      :titles="['流行', '新款', '精选']"
+      @tabClick="tabClick"
+      class="tabCopy"
+      v-show="isTabFixed"
+    />
     <scroll
       class="content"
       ref="scroll"
@@ -68,6 +68,15 @@ export default {
     });
     console.log(this);
   },
+  activated() {
+    this.$refs.scroll.scroll.scrollTo(0, this.saveY, 0);
+    console.log(10);
+  },
+  deactivated() {
+    console.log(this.$refs.scroll.scroll.y);
+    this.saveY = this.$refs.scroll.scroll.y;
+    console.log(20);
+  },
   data() {
     return {
       banners: [],
@@ -80,7 +89,8 @@ export default {
       currentType: "pop",
       backTopShow: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0,
     };
   },
   computed: {
@@ -101,8 +111,8 @@ export default {
           this.currentType = "sell";
           break;
       }
-      this.$refs.tabControl1.currentIndex = index
-      this.$refs.tabControl2.currentIndex = index
+      this.$refs.tabControl1.currentIndex = index;
+      this.$refs.tabControl2.currentIndex = index;
     },
     btClick() {
       // this.$refs.scroll.scroll.refresh();
@@ -111,7 +121,7 @@ export default {
     contentScroll(position) {
       this.backTopShow = position.y + 750 < 0;
 
-      this.isTabFixed = (-position.y) > this.tabOffsetTop
+      this.isTabFixed = -position.y > this.tabOffsetTop;
     },
     loadMore() {
       console.log("yes");
@@ -119,7 +129,7 @@ export default {
       this.$refs.scroll.refresh();
     },
     swiperImageLoad() {
-      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
     },
     debounce(func, delay) {
       let timer = null;
