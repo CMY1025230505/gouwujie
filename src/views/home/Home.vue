@@ -63,19 +63,18 @@ export default {
   },
   mounted() {
     const refresh = this.debounce(this.$refs.scroll.refresh, 500);
-    this.$bus.$on("itemImageLoad", () => {
+    this.$bus.$on("homeItemImageLoad", () => {
       refresh();
     });
-    console.log(this);
+    console.log(this.$refs.scroll.scroll);
   },
   activated() {
+    this.$refs.scroll.refresh()
     this.$refs.scroll.scroll.scrollTo(0, this.saveY, 0);
-    console.log(10);
   },
   deactivated() {
     console.log(this.$refs.scroll.scroll.y);
     this.saveY = this.$refs.scroll.scroll.y;
-    console.log(20);
   },
   data() {
     return {
@@ -140,7 +139,6 @@ export default {
         }
         timer = setTimeout(() => {
           func.apply(this, args);
-          console.log(2);
         }, delay);
       };
     },
